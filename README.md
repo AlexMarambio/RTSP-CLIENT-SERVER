@@ -8,7 +8,7 @@ Server created by: bluenviron/mediamtx
 
 You can start your server in a **linux** enviroment by using the following command.
 
-Incicia el servidor simplemente usando el siguiente comando en tu maquina **linux**.
+Inicia el servidor simplemente usando el siguiente comando en tu maquina **linux**.
 
     $ docker run --rm -it --network=host --name yourServerName bluenviron/mediamtx:latest-ffmpeg
 Note: Consider changing `yourServerName` to what ever you want, `:latest-ffmpeg` is important to use ffmpeg to upload and watch streamings.
