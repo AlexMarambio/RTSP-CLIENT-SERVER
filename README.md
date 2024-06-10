@@ -1,109 +1,61 @@
 # RTSP-CLIENT-SERVER
-### RTSP, RTMP, and HTTP server in Node.js
+[Puedes ver el siguiente video como guía(Spanish Only)](https://www.youtube.com/watch?v=nHReaW27Lsk)
 
-- Supports RTSP, RTMP/RTMPE/RTMPT/RTMPTE, and HTTP.
-- Supports only H.264 video and AAC audio (AAC-LC, HE-AAC v1/v2).
+## Starting the server | Iniciando el servidor
 
-### Installation without Docker
+Server created by: bluenviron/mediamtx
+[Original repository | Repositorio original](https://github.com/bluenviron/mediamtx?tab=readme-ov-file)
 
-    $ git clone https://github.com/iizukanao/node-rtsp-rtmp-server.git
-    $ cd node-rtsp-rtmp-server
-    $ npm install -d
+You can start your server in a **linux** enviroment by using the following command.
 
-Also, install [CoffeeScript](https://coffeescript.org/) 1.x or 2.x.
+Incicia el servidor simplemente usando el siguiente comando en tu maquina **linux**.
 
-### Configuration
+    $ docker run --rm -it --network=host --name yourServerName bluenviron/mediamtx:latest-ffmpeg
+Note: Consider changing `yourServerName` to what ever you want, `:latest-ffmpeg` is important to use ffmpeg to upload and watch streamings.
 
-Edit `config.coffee`.
+Nota: Puedes cambiar `yourServerName` al nombre de contenedor que desees, `:latest-ffmpeg` será la herramienta para subir y observar los directos.
 
-### Starting the server
+### **Upload streams | Subir directos**
 
-    $ cd node-rtsp-rtmp-server
-    $ sudo coffee server.coffee
+    $ ffmpeg -re -stream_loop -1 -i yourFile.mp4 -c copy -f rtsp -rtsp_transport tcp rtsp://localhost:8554/mystream
 
-or use Node.js directly:
+`yourFile.mp4` can be in any video format, here you need to paste your video path in case you dont run this comand in the folder where your video is via terminal (cd yourfolder).
 
-    $ cd node-rtsp-rtmp-server
-    $ coffee -c *.coffee
-    $ sudo node server.js
+`yourFile.mp4` puede estar en cualquier formato de video, aquí va la ruta a tu video en caso que no te encuentes en en la carpeta donde se encuentra tu video desde la terminal (cd aTuCarpeta).
 
-If both `serverPort` and `rtmpServerPort` are >= 1024 in `config.coffee`, `sudo` is not needed.
+`mystream` in `rtsp://localhost:8554/mystream` can be changed by othe name you want.
 
-### Docker Deploy Method
+`mystream` en `rtsp://localhost:8554/mystream` puede ser cambiado por el nombre que quieras.
 
-If you would prefer building and executing this code in a docker container, you can do so by first building the container and then running it.
+Note: Im using tcp protocol to transfer data.
 
-    $  make build
-    $  make console
+Nota: Estoy usando protocolo tcp para transferir la data.
 
-You may also want to use just `make run` to run the container as a daemon.  If you fiddle with the ports, you'll need to update the values in the Makefile as well to expose the desired ports to your system.
+### **Run the stream | Observa tu directo**
 
-### Serving MP4 files as recorded streams
+    $ ffplay rtsp://localhost:8554/mystream
+Or in case you have `vlc` instaled
 
-MP4 files in `file` directory will be accessible at either:
+O en caso que tengas `vlc` instalado
 
-- rtsp://localhost:80/file/FILENAME
-- rtmp://localhost/file/mp4:FILENAME
+    $ vlc rtsp://localhost:8554/mystream
+This are the commands to watch the stream in your machine via terminal.
 
-For example, file/video.mp4 is available at rtmp://localhost/file/mp4:video.mp4
+Con estos comando abres los videos en tu computadora mediante el terminal.
 
-### Publishing live streams
+## Docker client
+Client i based on | Me base en el cliente de: strattonlead/docker-ffplay
+[Original Dockerfile](https://github.com/strattonlead/docker-ffplay)
 
-#### From FFmpeg
+On the **same folder** where you have the dockerfile use:
 
-If you have an MP4 file with H.264 video and AAC audio:
+Usar en la **misma carpeta** donde tengas el dockerfile:
 
-    $ ffmpeg -re -i input.mp4 -c:v copy -c:a copy -f flv rtmp://localhost/live/STREAM_NAME
+    $ docker build -t ffplay-client .
+    $ docker run -it --rm --network container:yourServerName ffplay-client
+The name of your client can be changed in `ffplay-client`.
 
-Or if you have an MP4 file that is encoded in other audio/video format:
+El nombre del cliente se lo puedes cambiar en `ffplay-client`.
 
-    $ ffmpeg -re -i input.mp4 -c:v libx264 -preset fast -c:a libfdk_aac -ab 128k -ar 44100 -f flv rtmp://localhost/live/STREAM_NAME
 
-Replace `input.mp4` with live audio/video sources.
 
-#### From RTSP client
-
-You can publish streams from RTSP client such as FFmpeg.
-
-    $ ffmpeg -re -i input.mp4 -c:v libx264 -preset fast -c:a libfdk_aac -ab 128k -ar 44100 -f rtsp rtsp://localhost:80/live/STREAM_NAME
-
-Or you can publish it over TCP instead of UDP, by specifying `-rtsp_transport tcp` option. TCP is favorable if you publish large data from FFmpeg.
-
-    $ ffmpeg -re -i input.mp4 -c:v libx264 -preset fast -c:a libfdk_aac -ab 128k -ar 44100 -f rtsp -rtsp_transport tcp rtsp://localhost:80/live/STREAM_NAME
-
-#### From GStreamer
-
-For an MP4 file with H.264 video and AAC audio:
-
-    $ gst-launch-0.10 filesrc location=input.mp4 ! qtdemux name=demux ! \
-        flvmux name=mux streamable=true ! queue ! \
-        rtmpsink location='rtmp://localhost/live/STREAM_NAME' demux. ! \
-        multiqueue name=mq ! h264parse ! mux. demux. ! mq. mq. ! aacparse ! mux.
-
-Replace `input.mp4` with live audio/video sources.
-
-For an RTSP source (at rtsp://192.168.1.1:5000/video1  in this example):
-
-    $ gst-launch-0.10 rtspsrc location=rtsp://192.168.1.1:5000/video1 ! decodebin ! \
-        x264enc bitrate=256 tune=zerolatency  ! h264parse ! flvmux name=mux streamable=true ! \
-        queue ! rtmpsink location='rtmp://localhost/live/STREAM_NAME' 
-
-### Accessing the live stream
-
-#### Via RTSP
-
-RTSP stream is for VLC media player or Android's VideoView.
-
-**RTSP URL**: rtsp://localhost:80/live/STREAM_NAME
-
-Note that the RTSP server runs on port 80 by default.
-
-#### Via RTMP
-
-RTMP stream is also available.
-
-**RTMP URL**: rtmp://localhost/live/STREAM_NAME
-
-If you have rtmpdump installed, you can record the video with:
-
-    $ rtmpdump -v -r rtmp://localhost/live/STREAM_NAME -o dump.flv
