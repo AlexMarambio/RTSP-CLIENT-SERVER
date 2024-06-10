@@ -21,7 +21,7 @@ Nota: Puedes cambiar `yourServerName` al nombre de contenedor que desees, `:late
 
 `yourFile.mp4` can be in any video format, here you need to paste your video path in case you dont run this comand in the folder where your video is via terminal (cd yourfolder).
 
-`yourFile.mp4` puede estar en cualquier formato de video, aquí va la ruta a tu video en caso que no te encuentes en en la carpeta donde se encuentra tu video desde la terminal (cd aTuCarpeta).
+`yourFile.mp4` puede estar en cualquier formato de video, aquí va la ruta a tu video en caso que no te encuentres en en la carpeta donde se encuentra tu video desde la terminal (cd aTuCarpeta).
 
 `mystream` in `rtsp://localhost:8554/mystream` can be changed by othe name you want.
 
