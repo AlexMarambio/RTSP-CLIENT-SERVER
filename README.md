@@ -10,7 +10,7 @@ You can start your server in a **linux** enviroment by using the following comma
 
 Inicia el servidor simplemente usando el siguiente comando en tu maquina **linux**.
 
-    $ docker run --rm -it --network=host --name yourServerName bluenviron/mediamtx:latest-ffmpeg
+    $ sudo docker run --rm -it --network=host --name yourServerName bluenviron/mediamtx:latest-ffmpeg
 Note: Consider changing `yourServerName` to what ever you want, `:latest-ffmpeg` is important to use ffmpeg to upload and watch streamings.
 
 Nota: Puedes cambiar `yourServerName` al nombre de contenedor que desees, `:latest-ffmpeg` será la herramienta para subir y observar los directos.
@@ -57,8 +57,8 @@ On the **same folder** via terminal where you have the dockerfile and run:
 
 Usar en la **misma carpeta** en tu terminal donde tengas el dockerfile:
 
-    $ docker build -t ffplay-client .
-    $ docker run -it --rm --network container:yourServerName ffplay-client
+    $ sudo docker build -t ffplay-client .
+    $ sudo docker run -it --rm --network container:yourServerName ffplay-client
 The name of your client can be changed in `ffplay-client`.
 
 El nombre del cliente se lo puedes cambiar en `ffplay-client`.
