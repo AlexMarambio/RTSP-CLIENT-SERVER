@@ -47,9 +47,15 @@ Con estos comando abres los videos en tu computadora mediante el terminal.
 Client i based on | Me base en el cliente de: strattonlead/docker-ffplay
 [Original Dockerfile](https://github.com/strattonlead/docker-ffplay)
 
-On the **same folder** where you have the dockerfile use:
+Download the Docker file using the folloeing line on a terminal:
 
-Usar en la **misma carpeta** donde tengas el dockerfile:
+Descarga el archivo de Docker en una terminal mediante:
+
+    $ git clone https://github.com/AlexMarambio/RTSP-CLIENT-SERVER
+
+On the **same folder** via terminal where you have the dockerfile and run:
+
+Usar en la **misma carpeta** en tu terminal donde tengas el dockerfile:
 
     $ docker build -t ffplay-client .
     $ docker run -it --rm --network container:yourServerName ffplay-client
